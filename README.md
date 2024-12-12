@@ -51,8 +51,7 @@ and run the latest local LLMs
 
 ## Installation
 
-### Download the open-source LLMs tool right here: [Ollama
-](https://ollama.com/)
+### Download the open-source LLMs tool [right here](https://ollama.com/):
 
 After installation, you can download and use any GGUF/HF/EXL2 LLMs.
 Go to [Ollama Models](https://ollama.com/search), choose any models you want to run, I suggest [llama3.2:3b](https://ollama.com/library/llama3.2:3b) for first use, the run this code:
@@ -63,7 +62,7 @@ ollama pull llama3.2:3b
 
 These are only the mainstreams LLMs models, you can access to more advance one on websites likes: [Models - Hugging Face](https://huggingface.co/models) and even customize/fine tuning your own models.
 
-###### Optional: Change the models installation folder to different drive.
+##### Optional: Change the models installation folder to different drive.
 
 Since Ollama store models in your C:\ drive, it is difficult to scale up for more sophisticated models.
 You can change it by follow this guide: [How to Deploy and Experiment with Ollama Models on Your Local Machine (Windows) | by Avighan Majumder | Medium](https://medium.com/@dpn.majumder/how-to-deploy-and-experiment-with-ollama-models-on-your-local-machine-windows-34c967a7ab0e)
