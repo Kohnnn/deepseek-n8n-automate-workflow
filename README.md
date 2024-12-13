@@ -53,11 +53,17 @@ and run the latest local LLMs
 
 ### Download the open-source LLMs tool [right here](https://ollama.com/):
 
-After installation, you can download and use any GGUF/HF/EXL2 LLMs.
+After installation, run the app and visit [http://localhost:11434]() on you browser, you should get: 
+
+```
+Ollama is running
+```
+
+No you can download and use any GGUF/HF/EXL2 LLMs directly in terminal or through any supported platform.
 Go to [Ollama Models](https://ollama.com/search), choose any models you want to run, I suggest [llama3.2:3b](https://ollama.com/library/llama3.2:3b) for first use, the run this code:
 
 ```
-ollama pull llama3.2:3b
+ollama run llama3.2:3b
 ```
 
 These are only the mainstreams LLMs models, you can access to more advance one on websites likes: [Models - Hugging Face](https://huggingface.co/models) and even customize/fine tuning your own models.
@@ -70,8 +76,9 @@ You can change it by follow this guide: [How to Deploy and Experiment with Ollam
 ### Install Dockers and the local AI kit
 
 Download and install these dependencies:
-[Git - Downloads](https://git-scm.com/downloads) - to manage source code
-[Windows | Docker Docs](https://docs.docker.com/desktop/setup/install/windows-install/) - to develope and host the apps
+
+* [Git - Downloads](https://git-scm.com/downloads) - to manage source code
+* [Windows | Docker Docs](https://docs.docker.com/desktop/setup/install/windows-install/) - to develope and host the apps
 
 ### For Nvidia GPU users
 
@@ -155,8 +162,8 @@ to get started.
    you copied in a previous step.
 10. Toggle the function on and now it will be available in your model dropdown in the top left!
 
-To open n8n at any time, visit [http://localhost:5678/](http://localhost:5678/) in your browser.
-To open Open WebUI at any time, visit [http://localhost:3000/](http://localhost:3000/).
+**To open n8n at any time, visit [http://localhost:5678/](http://localhost:5678/) in your browser.
+To open Open WebUI at any time, visit [http://localhost:3000/](http://localhost:3000/).**
 
 With your n8n instance, you’ll have access to over 400 integrations and a
 suite of basic and advanced AI nodes such as
