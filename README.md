@@ -249,6 +249,13 @@ interact with the local filesystem.
 - [Local File Trigger](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.localfiletrigger/)
 - [Execute Command](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.executecommand/)
 
+**Using free AI Agent API**
+
+* [Gemini Experimental 1206 (free) - API, Providers, Stats | OpenRouter](https://openrouter.ai/google/gemini-exp-1206:free)
+* [Llama 3.2 90B Vision Instruct (free) - API, Providers, Stats | OpenRouter](https://openrouter.ai/meta-llama/llama-3.2-90b-vision-instruct:free)
+* [Llama 3.1 405B Instruct (free) - API, Providers, Stats | OpenRouter](https://openrouter.ai/meta-llama/llama-3.1-405b-instruct:free)
+* [Mistral 7B Instruct (free) - API, Providers, Stats | OpenRouter](https://openrouter.ai/mistralai/mistral-7b-instruct:free)
+
 ## 📜 License
 
 This project is licensed under the Apache License 2.0 - see the
