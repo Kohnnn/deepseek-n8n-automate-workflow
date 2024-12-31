@@ -4,12 +4,6 @@
 quickly bootstraps a fully featured Local AI and Low Code development
 environment including Open WebUI for an interface to chat with your N8N agents.
 
-This is Cole's version with a couple of improvements and the addition of Open WebUI!
-Also, the local RAG AI Agent workflow from the video will be automatically in your
-n8n instance if you use this setup instead of the base one provided by n8n!
-
-Download my N8N + OpenWebUI integration [directly on the Open WebUI site.](https://openwebui.com/f/coleam/n8n_pipe/) (more instructions below)
-
 ![n8n.io - Screenshot](https://raw.githubusercontent.com/n8n-io/self-hosted-ai-starter-kit/main/assets/n8n-demo.gif)
 
 Heavily inspired by [https://github.com/n8n-io](https://github.com/n8n-io) and [https://github.com/coleam00](https://github.com/coleam00), it combines the self-hosted n8n
