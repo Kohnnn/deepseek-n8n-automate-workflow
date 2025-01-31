@@ -59,6 +59,11 @@ Go to [Ollama Models](https://ollama.com/search), choose any models you want to 
 ```
 ollama run llama3.2:3b
 ```
+Or you can try [deepseek-r1](https://ollama.com/library/deepseek-r1) to use the lastest opensource reasoning model:
+
+```
+ollama run deepseek-r1
+```
 
 These are only the mainstreams LLMs models, you can access to more advance one on websites likes: [Models - Hugging Face](https://huggingface.co/models) and even customize/fine tuning your own models.
 
@@ -140,21 +145,28 @@ to get started.
    Google Drive: Follow [this guide from n8n](https://docs.n8n.io/integrations/builtin/credentials/google/).
    Don't use localhost for the redirect URI, just use another domain you have, it will still work!
    Alternatively, you can set up [local file triggers](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.localfiletrigger/).
-4. Select **Test workflow** to start running the workflow.
-5. If this is the first time you’re running the workflow, you may need to wait
+   
+   This setting should be in your Openwebui:
+   
+   ![image](https://github.com/user-attachments/assets/a8d0c3e8-a918-4ff9-af84-51b5d0ff4507)
+
+
+   
+5. Select **Test workflow** to start running the workflow.
+6. If this is the first time you’re running the workflow, you may need to wait
    until Ollama finishes downloading Llama3.1. You can inspect the docker
    console logs to check on the progress.
-6. Make sure to toggle the workflow as active and copy the "Production" webhook URL!
-7. Open [http://localhost:3000/](http://localhost:3000/) in your browser to set up Open WebUI.
+7. Make sure to toggle the workflow as active and copy the "Production" webhook URL!
+8. Open [http://localhost:3000/](http://localhost:3000/) in your browser to set up Open WebUI.
    You’ll only have to do this once. You are NOT creating an account with Open WebUI in the
    setup here, it is only a local account for your instance!
-8. Go to Workspace -> Functions -> Add Function -> Give name + description then paste in
+9. Go to Workspace -> Functions -> Add Function -> Give name + description then paste in
    the code from `n8n_pipe.py`
 
    The function is also [published here on Open WebUI&#39;s site](https://openwebui.com/f/coleam/n8n_pipe/).
-9. Click on the gear icon and set the n8n_url to the production URL for the webhook
+10. Click on the gear icon and set the n8n_url to the production URL for the webhook
    you copied in a previous step.
-10. Toggle the function on and now it will be available in your model dropdown in the top left!
+11. Toggle the function on and now it will be available in your model dropdown in the top left!
 
 **To open n8n at any time, visit [http://localhost:5678/](http://localhost:5678/) in your browser.
 To open Open WebUI at any time, visit [http://localhost:3000/](http://localhost:3000/).**
