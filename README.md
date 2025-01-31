@@ -65,7 +65,7 @@ Or you can try [deepseek-r1](https://ollama.com/library/deepseek-r1) to use the 
 ollama run deepseek-r1
 ```
 
-These are only the mainstreams LLMs models, you can access to more advance one on websites likes: [Models - Hugging Face](https://huggingface.co/models) and even customize/fine tuning your own models.
+These are only the mainstreams LLMs models, you can access to more advance one on websites likes: [Models - Hugging Face](https://huggingface.co/models) and even customize/fine tuning your own models. To check whether the model can run locally with your computer specs, refer to this [extractum-llms](https://llm.extractum.io/list/) list.
 
 ##### Optional: Change the models installation folder to different drive.
 
