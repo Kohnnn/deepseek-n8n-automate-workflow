@@ -49,6 +49,10 @@ and run the latest local LLMs
 
 ⭐️ Analyse financial documents privately and for little cost
 
+### Work in process
+
+⭐️ Change detection to moitor website
+
 ## Installation
 
 ### Download the open-source LLMs tool [right here](https://ollama.com/):

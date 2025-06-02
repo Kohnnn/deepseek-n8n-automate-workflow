@@ -1,15 +1,26 @@
 version: '3.8'
 
+# Persistent storage volumes
 volumes:
-  n8n_storage:
-  postgres_storage:
-  qdrant_storage:
-  open-webui:
+  n8n_storage:            # Stores n8n workflows, credentials, and execution data
+  postgres_storage:       # Stores PostgreSQL database files
+  qdrant_storage:         # Stores vector database files for Qdrant
+  open-webui_data:        # Stores Open WebUI configuration and data
+  redis_data:             # Stores Redis cache data
+  changedetection_data:   # Stores changedetection.io watch configurations and history
+  local-dockerfile:       # Maps local Windows folder to Docker containers
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\DockerFile # Windows path for shared files - ensure this folder exists
 
+# Shared network for all services
 networks:
   demo:
 
-x-n8n: &service-n8n
+# Base configuration for n8n instances to reduce duplication
+x-n8n-base: &n8n-base-config
   image: n8nio/n8n:latest
   networks: ['demo']
   environment:
@@ -19,27 +30,38 @@ x-n8n: &service-n8n
     - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
     - N8N_DIAGNOSTICS_ENABLED=false
     - N8N_PERSONALIZATION_ENABLED=false
-    - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+    - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
+    - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY} # CRITICAL: Must be the same for main and workers
     - N8N_USER_MANAGEMENT_JWT_SECRET=${N8N_USER_MANAGEMENT_JWT_SECRET}
-  links:
-    - postgres
+    - N8N_TIMEZONE=Asia/Ho_Chi_Minh # Correct variable for timezone setting
+    - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true # Fix permissions warning
+    - N8N_RUNNERS_ENABLED=true # Enable task runners (recommended)
+    - EXECUTIONS_MODE=queue # Queue mode for scaling
+    - QUEUE_BULL_REDIS_HOST=redis
+    - QUEUE_BULL_REDIS_PORT=6379
+    - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true # Offload manual executions to workers
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_started
 
 services:
-  flowise:
-    image: flowiseai/flowise
+  # Redis - Used for n8n queue management and caching
+  redis:
+    image: redis:alpine
     networks: ['demo']
+    container_name: redis
     restart: unless-stopped
-    container_name: flowise
-    environment:
-        - PORT=3001
-    ports:
-        - 3001:3001
-    extra_hosts:
-      - "host.docker.internal:host-gateway"        
     volumes:
-        - ~/.flowise:/root/.flowise
-    entrypoint: /bin/sh -c "sleep 3; flowise start"
-  
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Open WebUI - Web interface for AI models
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
     networks: ['demo']
@@ -50,8 +72,11 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - open-webui:/app/backend/data
+      - open-webui_data:/app/backend/data
+    environment:
+      - OLLAMA_API_BASE_URL=${OLLAMA_HOST} # Using the OLLAMA_HOST from .env
 
+  # PostgreSQL - Database for n8n and other services
   postgres:
     image: postgres:16-alpine
     networks: ['demo']
@@ -70,42 +95,233 @@ services:
       timeout: 5s
       retries: 10
 
+  # n8n Import - Imports workflows and credentials on startup
   n8n-import:
-    <<: *service-n8n
+    <<: *n8n-base-config
     container_name: n8n-import
     entrypoint: /bin/sh
     command:
       - "-c"
       - "n8n import:credentials --separate --input=/backup/credentials && n8n import:workflow --separate --input=/backup/workflows"
     volumes:
+      - n8n_storage:/home/node/.n8n
       - ./n8n/backup:/backup
-    depends_on:
+      - local-dockerfile:/local-dockerfile
+    depends_on: # Overrides depends_on from anchor
       postgres:
         condition: service_healthy
 
-  n8n:
-    <<: *service-n8n
-    container_name: n8n
+  # n8n Main - Main n8n instance for web UI and API
+  n8n_main:
+    <<: *n8n-base-config
+    container_name: n8n-main
     restart: unless-stopped
     ports:
       - 5678:5678
+    environment:
+      - N8N_PROTOCOL=https
+      - N8N_HOST="n8nlocalhost.share.zrok.io"
+      - WEBHOOK_URL="https://n8nlocalhost.share.zrok.io"
+      - N8N_RUNNERS_ENABLED=true # Explicitly enable task runners on main instance
     volumes:
       - n8n_storage:/home/node/.n8n
       - ./n8n/backup:/backup
       - ./shared:/data/shared
-    depends_on:
+      - local-dockerfile:/local-dockerfile
+    depends_on: # Overrides depends_on from anchor
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_started
       n8n-import:
         condition: service_completed_successfully
+      browserless:
+        condition: service_started
+      changedetection:
+        condition: service_started
 
+  # n8n Worker - Processes queued workflow executions
+  n8n_worker_1:
+    <<: *n8n-base-config
+    container_name: n8n-worker-1
+    restart: unless-stopped
+    entrypoint: ["node", "/usr/local/lib/node_modules/n8n/bin/n8n", "worker"]
+    environment:
+      - WORKER_CONCURRENCY=${N8N_WORKER_1_CONCURRENCY:-5} # Allow per-worker concurrency via .env
+      - N8N_LOG_LEVEL=${N8N_WORKER_LOG_LEVEL:-info}
+      - N8N_RUNNERS_ENABLED=true # Explicitly enable task runners on worker
+      - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true # Explicitly enable offloading manual executions
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB:-n8n}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER:-postgres}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=redis
+      - QUEUE_BULL_REDIS_PORT=6379
+      - QUEUE_BULL_REDIS_DB=0
+      - QUEUE_BULL_REDIS_TIMEOUT_THRESHOLD=10000
+    volumes:
+      - n8n_storage:/home/node/.n8n
+      - ./shared:/data/shared
+      - local-dockerfile:/local-dockerfile
+    depends_on: # Overrides depends_on from anchor
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      n8n_main:
+        condition: service_started
+
+  # Additional workers (commented out) - Can be enabled for more processing power
+  # n8n_worker_2: # <-- ADDED WORKER 2
+  #   <<: *n8n-base-config
+  #   container_name: n8n-worker-2 # Unique container name
+  #   restart: unless-stopped
+  #   command: n8n worker
+  #   environment:
+  #     - WORKER_CONCURRENCY=${N8N_WORKER_2_CONCURRENCY:-5} # Allow per-worker concurrency via .env
+  #     - N8N_LOG_LEVEL=${N8N_WORKER_LOG_LEVEL:-info}
+  #   volumes:
+  #     - n8n_storage:/home/node/.n8n
+  #     - ./shared:/data/shared
+  #     - local-dockerfile:/local-dockerfile
+  #   depends_on: # Overrides depends_on from anchor
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_started
+  #     n8n_main:
+  #       condition: service_started
+
+  # n8n_worker_3: # <-- ADDED WORKER 3
+  #   <<: *n8n-base-config
+  #   container_name: n8n-worker-3 # Unique container name
+  #   restart: unless-stopped
+  #   command: n8n worker
+  #   environment:
+  #     - WORKER_CONCURRENCY=${N8N_WORKER_3_CONCURRENCY:-5} # Allow per-worker concurrency via .env
+  #     - N8N_LOG_LEVEL=${N8N_WORKER_LOG_LEVEL:-info}
+  #   volumes:
+  #     - n8n_storage:/home/node/.n8n
+  #     - ./shared:/data/shared
+  #     - local-dockerfile:/local-dockerfile
+  #   depends_on: # Overrides depends_on from anchor
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_started
+  #     n8n_main:
+  #       condition: service_started
+
+  # Qdrant - Vector database for AI applications
   qdrant:
-    image: qdrant/qdrant
+    image: 'qdrant/qdrant:latest'
     container_name: qdrant
     networks: ['demo']
     restart: unless-stopped
     ports:
       - 6333:6333
+    environment:
+      - QDRANT_API_KEY=${SERVICE_PASSWORD_QDRANTAPIKEY:-qdrant-api-key}
     volumes:
       - qdrant_storage:/qdrant/storage
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "bash -c ':> /dev/tcp/127.0.0.1/6333' || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 3
 
+  # Browserless - Headless Chrome for web automation
+  browserless:
+    image: browserless/chrome
+    container_name: browserless
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - MAX_CONCURRENT_SESSIONS=3
+      - PREBOOT_CHROME=true
+      - TOKEN=${BROWSERLESS_TOKEN:-browserless_token}
+      - SCREEN_WIDTH=1280
+      - SCREEN_HEIGHT=720
+      - SCREEN_DEPTH=16
+      - ENABLE_CORS=true
+      - ENABLE_API_GET=true
+      - ENABLE_DEBUGGER=true
+      - CHROME_REFRESH_TIME=600000
+      - TIMEOUT=300000
+      - DEFAULT_BLOCK_ADS=true
+      - DEFAULT_STEALTH=true
+      - CONNECTION_TIMEOUT=300000
+      - KEEP_ALIVE=true
+    networks: ['demo']
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - local-dockerfile:/local-dockerfile
+
+  # Selenium Chrome - For web automation and testing
+  selenium-chrome:
+    image: selenium/standalone-chrome
+    container_name: selenium-chrome
+    restart: unless-stopped
+    ports:
+      - "4444:4444"
+    networks: ['demo']
+    volumes:
+      - local-dockerfile:/local-dockerfile  # Add access to local files
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # SockPuppet Browser - Alternative browser automation
+  sockpuppetbrowser:
+    image: dgtlmoon/sockpuppetbrowser:latest
+    container_name: sockpuppetbrowser
+    restart: unless-stopped
+    ports:
+      - "3002:3000"
+    environment:
+      - NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
+    networks: ['demo']
+    volumes:
+      - local-dockerfile:/local-dockerfile  # Add access to local files
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # ChangeDetection.io - Website change monitoring
+  changedetection:
+    image: dgtlmoon/changedetection.io
+    container_name: changedetection
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - changedetection_data:/datastore
+      - local-dockerfile:/local-dockerfile
+    environment:
+      - BASE_URL=http://localhost:5000
+      - WEBDRIVER_URL=http://browserless:3000?token=${BROWSERLESS_TOKEN:-browserless_token}
+      - PLAYWRIGHT_DRIVER_URL=ws://browserless:3000?token=${BROWSERLESS_TOKEN:-browserless_token}
+      - FETCH_WORKERS=1
+      - FETCH_TIMEOUT=300
+      - WEBDRIVER_DELAY=30
+      - PLAYWRIGHT_WAIT_UNTIL=networkidle
+      - REQUESTS_TIMEOUT=300
+      - PUID=1000
+      - PGID=1000
+      - IGNORE_RENDERING_ERRORS=true
+      - BROWSER_TIMEOUT=300
+      - WEBDRIVER_GOTO_TIMEOUT=300
+      - PLAYWRIGHT_GOTO_TIMEOUT=300
+      - BROWSER_SLEEP_TIME=30
+      - BROWSER_NUM_RETRIES=3
+      - CHECK_BROWSER_RUNNING_TIMEOUT=300
+      - IGNORE_STATUS_CODES=true
+    networks: ['demo']
+    depends_on:
+      - browserless
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
