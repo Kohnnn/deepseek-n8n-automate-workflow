@@ -1,4 +1,4 @@
-# Self-hosted AI n8n with deepseek
+# Self-hosted AI n8n with Local LLM Integration
 
 **Self-hosted AI Starter Kit** is an open, docker compose template that
 quickly bootstraps a fully featured Local AI and Low Code development
@@ -6,15 +6,15 @@ environment including Open WebUI for an interface to chat with your N8N agents.
 
 ![n8n.io - Screenshot](https://raw.githubusercontent.com/n8n-io/self-hosted-ai-starter-kit/main/assets/n8n-demo.gif)
 
-Heavily inspired by [https://github.com/n8n-io](https://github.com/n8n-io) and [https://github.com/coleam00](https://github.com/coleam00), it combines the self-hosted n8n
-platform with a curated list of compatible AI products and components to
-quickly get started with building self-hosted AI workflows.
-This repo fork is to focus on the core apps, remove Ollama dependencies in Docker for more models scaling, and adding easy accessability to local files.
+Heavily inspired by [n8n-io](https://github.com/n8n-io) and [coleam00](https://github.com/coleam00)
+This project combines the self-hosted n8n platform with a curated list of compatible AI products and components to quickly get started with building self-hosted AI workflows.
+This fork focuses on the core apps, removes Ollama dependencies in Docker for more models scaling, and adds easy accessability to local files. 
+*Important* Reinforce Backup System for n8n to support workflows recover.
 
 > [!TIP]
 > [Read the announcement](https://blog.n8n.io/self-hosted-ai/)
 
-### What’s included
+### What's included
 
 ✅ [**Self-hosted n8n**](https://n8n.io/) - Low-code platform with over 400
 integrations and advanced AI components
@@ -27,6 +27,8 @@ store with an comprehensive API
 
 ✅ [**PostgreSQL**](https://www.postgresql.org/) -  Workhorse of the Data
 Engineering world, handles large amounts of data safely.
+
+✅ [**Enhanced n8n Workflow Backup System**](./WORKFLOW_BACKUP_README.md) - Resilient configuration with automated backups and recovery mechanisms.
 
 ### What will you need to add
 
@@ -45,43 +47,43 @@ and run the latest local LLMs
 
 ### Work in process
 
-⭐️ Change detection to moitor website
+⭐️ Change detection to monitor website
 
 ## Installation
 
 ### Download the open-source LLMs tool [right here](https://ollama.com/):
 
-After installation, run the app and visit [http://localhost:11434]() on you browser, you should get: 
+After installation, run the app and visit [http://localhost:11434]() on your browser, you should get: 
 
 ```
 Ollama is running
 ```
 
-No you can download and use any GGUF/HF/EXL2 LLMs directly in terminal or through any supported platform.
-Go to [Ollama Models](https://ollama.com/search), choose any models you want to run, I suggest [llama3.2:3b](https://ollama.com/library/llama3.2:3b) for first use, the run this code:
+Now you can download and use any GGUF/HF/EXL2 LLMs directly in terminal or through any supported platform.
+Go to [Ollama Models](https://ollama.com/search), choose any models you want to run, I suggest [llama3.2:3b](https://ollama.com/library/llama3.2:3b) for first use, then run this code:
 
 ```
 ollama run llama3.2:3b
 ```
-Or you can try [deepseek-r1](https://ollama.com/library/deepseek-r1) to use the lastest opensource reasoning model:
+Or you can try [deepseek-r1](https://ollama.com/library/deepseek-r1) to use the latest opensource reasoning model:
 
 ```
 ollama run deepseek-r1
 ```
 
-These are only the mainstreams LLMs models, you can access to more advance one on websites likes: [Models - Hugging Face](https://huggingface.co/models) and even customize/fine tuning your own models. To check whether the model can run locally with your computer specs, refer to this [extractum-llms](https://llm.extractum.io/list/) list.
+These are only the mainstream LLMs models, you can access more advanced ones on websites like: [Models - Hugging Face](https://huggingface.co/models) and even customize/fine tune your own models. To check whether a model can run locally with your computer specs, refer to this [extractum-llms](https://llm.extractum.io/list/) list.
 
 ##### Optional: Change the models installation folder to different drive.
 
-Since Ollama store models in your C:\ drive, it is difficult to scale up for more sophisticated models.
-You can change it by follow this guide: [How to Deploy and Experiment with Ollama Models on Your Local Machine (Windows) | by Avighan Majumder | Medium](https://medium.com/@dpn.majumder/how-to-deploy-and-experiment-with-ollama-models-on-your-local-machine-windows-34c967a7ab0e)
+Since Ollama stores models in your C:\ drive, it is difficult to scale up for more sophisticated models.
+You can change it by following this guide: [How to Deploy and Experiment with Ollama Models on Your Local Machine (Windows) | by Avighan Majumder | Medium](https://medium.com/@dpn.majumder/how-to-deploy-and-experiment-with-ollama-models-on-your-local-machine-windows-34c967a7ab0e)
 
-### Install Dockers and the local AI kit
+### Install Docker and the local AI kit
 
 Download and install these dependencies:
 
 * [Git - Downloads](https://git-scm.com/downloads) - to manage source code
-* [Windows | Docker Docs](https://docs.docker.com/desktop/setup/install/windows-install/) - to develope and host the apps
+* [Windows | Docker Docs](https://docs.docker.com/desktop/setup/install/windows-install/) - to develop and host the apps
 
 ### For Nvidia GPU users
 
@@ -129,11 +131,11 @@ docker compose --profile cpu up
 ## ⚡️ Quick start and usage
 
 The main component of the self-hosted AI starter kit is a docker compose file
-pre-configured with network and disk so there isn’t much else you need to
+pre-configured with network and disk so there isn't much else you need to
 install. After completing the installation steps above, follow the steps below
 to get started.
 
-1. Open [http://localhost:5678/](http://localhost:5678/) in your browser to set up n8n. You’ll only
+1. Open [http://localhost:5678/](http://localhost:5678/) in your browser to set up n8n. You'll only
    have to do this once. You are NOT creating an account with n8n in the setup here,
    it is only a local account for your instance!
 2. Open the included workflow:
@@ -150,19 +152,19 @@ to get started.
    Don't use localhost for the redirect URI, just use another domain you have, it will still work!
    Alternatively, you can set up [local file triggers](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.localfiletrigger/).
    
-   This setting should be in your Openwebui:
+   This setting should be in your OpenWebUI:
    
    ![image](https://github.com/user-attachments/assets/a8d0c3e8-a918-4ff9-af84-51b5d0ff4507)
 
 
    
 5. Select **Test workflow** to start running the workflow.
-6. If this is the first time you’re running the workflow, you may need to wait
-   until Ollama finishes downloading Llama3.1. You can inspect the docker
+6. If this is the first time you're running the workflow, you may need to wait
+   until Ollama finishes downloading your selected model. You can inspect the docker
    console logs to check on the progress.
 7. Make sure to toggle the workflow as active and copy the "Production" webhook URL!
 8. Open [http://localhost:3000/](http://localhost:3000/) in your browser to set up Open WebUI.
-   You’ll only have to do this once. You are NOT creating an account with Open WebUI in the
+   You'll only have to do this once. You are NOT creating an account with Open WebUI in the
    setup here, it is only a local account for your instance!
 9. Go to Workspace -> Functions -> Add Function -> Give name + description then paste in
    the code from `n8n_pipe.py`
@@ -175,7 +177,7 @@ to get started.
 **To open n8n at any time, visit [http://localhost:5678/](http://localhost:5678/) in your browser.
 To open Open WebUI at any time, visit [http://localhost:3000/](http://localhost:3000/).**
 
-With your n8n instance, you’ll have access to over 400 integrations and a
+With your n8n instance, you'll have access to over 400 integrations and a
 suite of basic and advanced AI nodes such as
 [AI Agent](https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/),
 [Text classifier](https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.text-classifier/),
@@ -185,7 +187,7 @@ language model and Qdrant as your vector store.
 
 > [!NOTE]
 > This starter kit is designed to help you get started with self-hosted AI
-> workflows. While it’s not fully optimized for production environments, it
+> workflows. While it's not fully optimized for production environments, it
 > combines robust components that work well together for proof-of-concept
 > projects. You can customize it to meet your specific needs
 
@@ -211,6 +213,21 @@ docker compose create && docker compose up
 docker compose --profile cpu pull
 docker compose create && docker compose --profile cpu up
 ```
+
+## 🛡️ Data Protection and Workflow Backup
+
+This kit includes an enhanced docker-compose configuration that protects against n8n workflow data loss, which can sometimes occur during system updates or container restarts. Key features include:
+
+- **Automated Backup System**: Workflows are automatically backed up at regular intervals
+- **Separate Volume Mounts**: Critical data is stored in separate, persistent volumes
+- **Database Backup Service**: Daily PostgreSQL backups with 7-day retention
+- **Recovery Mode**: Built-in mechanisms to recover lost workflows
+- **Backup Scripts**: Both bash and PowerShell scripts for manual workflow exports
+
+For detailed instructions on recovery procedures, see [Workflow Backup README](./WORKFLOW_BACKUP_README.md).
+
+> [!IMPORTANT]
+> Never use `docker-compose down -v` as it will delete volumes containing your workflow data!
 
 ## 👓 Recommended reading
 
@@ -247,7 +264,7 @@ your local n8n instance.
 
 - [Tax Code Assistant](https://n8n.io/workflows/2341-build-a-tax-code-assistant-with-qdrant-mistralai-and-openai/)
 - [Breakdown Documents into Study Notes with MistralAI and Qdrant](https://n8n.io/workflows/2339-breakdown-documents-into-study-notes-using-templating-mistralai-and-qdrant/)
-- [Financial Documents Assistant using Qdrant and](https://n8n.io/workflows/2335-build-a-financial-documents-assistant-using-qdrant-and-mistralai/) [Mistral.ai](http://mistral.ai/)
+- [Financial Documents Assistant using Qdrant and](https://n8n.io/workflows/2335-build-a-financial-documents-assistant-using-qdrant-and-mistralai/) [Mistral.ai](http://mistral.ai/)
 - [Recipe Recommendations with Qdrant and Mistral](https://n8n.io/workflows/2333-recipe-recommendations-with-qdrant-and-mistral/)
 
 ## Tips & tricks
@@ -257,7 +274,7 @@ your local n8n instance.
 The self-hosted AI starter kit will create a shared folder (by default,
 located in the same directory) which is mounted to the n8n container and
 allows n8n to access files on disk. This folder within the n8n container is
-located at `/data/shared` -- this is the path you’ll need to use in nodes that
+located at `/data/shared` -- this is the path you'll need to use in nodes that
 interact with the local filesystem.
 
 **Nodes that interact with the local filesystem**
@@ -266,6 +283,27 @@ interact with the local filesystem.
 - [Local File Trigger](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.localfiletrigger/)
 - [Execute Command](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.executecommand/)
 
+### Backup and recovery
+
+The docker-compose.yml has been enhanced to prevent workflow data loss as described in [this n8n community post](https://community.n8n.io/t/lost-all-workflows-credentials-everythig-after-ubuntu-update/22812/7). Key improvements include:
+
+- Multiple backup directories with specific data types
+- Automated workflow backups with `N8N_PUSH_BACKUP_ENABLED=true`
+- Recovery mode with `N8N_RECOVERY_MODE=true`
+- Daily database backups
+- Backup scripts for both Linux/macOS and Windows
+
+For manual backups, you can use:
+```bash
+# Linux/macOS
+./backup_n8n_workflows.sh
+
+# Windows
+.\backup_n8n_workflows.ps1
+```
+
+For detailed recovery steps, refer to [backups/n8n_README.md](./backups/n8n_README.md).
+
 **Using free AI Agent API**
 
 * [Gemini Experimental 1206 (free) - API, Providers, Stats | OpenRouter](https://openrouter.ai/google/gemini-exp-1206:free)
@@ -273,23 +311,23 @@ interact with the local filesystem.
 * [Llama 3.1 405B Instruct (free) - API, Providers, Stats | OpenRouter](https://openrouter.ai/meta-llama/llama-3.1-405b-instruct:free)
 * [Mistral 7B Instruct (free) - API, Providers, Stats | OpenRouter](https://openrouter.ai/mistralai/mistral-7b-instruct:free)
 
-## 📜 License
+## 📜 License
 
 This project is licensed under the Apache License 2.0 - see the
 [LICENSE](LICENSE) file for details.
 
 ## ⚡️Special thanks
 
-Special thanks to [https://github.com/n8n-io](https://github.com/n8n-io) and [https://github.com/coleam00](https://github.com/coleam00) for the guide, you can refer to their documentation for more advance AI application tutorial.
+Special thanks to [https://github.com/n8n-io](https://github.com/n8n-io) and [https://github.com/coleam00](https://github.com/coleam00) for the guide, you can refer to their documentation for more advanced AI application tutorials.
 
-## 💬 Support
+## 💬 Support
 
 Join the conversation in the [n8n Forum](https://community.n8n.io/), where you
 can:
 
-- **Share Your Work**: Show off what you’ve built with n8n and inspire others
+- **Share Your Work**: Show off what you've built with n8n and inspire others
   in the community.
-- **Ask Questions**: Whether you’re just getting started or you’re a seasoned
+- **Ask Questions**: Whether you're just getting started or you're a seasoned
   pro, the community and our team are ready to support with any challenges.
 - **Propose Ideas**: Have an idea for a feature or improvement? Let us know!
-  We’re always eager to hear what you’d like to see next.
+  We're always eager to hear what you'd like to see next.

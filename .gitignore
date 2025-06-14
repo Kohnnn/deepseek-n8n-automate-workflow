@@ -22,70 +22,87 @@ ms-playwright/
 .env.*
 .flaskenv
 
-# Editor directories and files
-.idea/
-.vscode/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-.cursor/
-.history/
+#keep this one
+!.env.example
 
-# OS specific
-.DS_Store
-Thumbs.db
-desktop.ini
-ehthumbs.db
-$RECYCLE.BIN/
+# Docker volumes and data directories
+backups/postgres_data/
+backups/redis_data/
+backups/n8n/
+backups/n8n_*
+backups/qdrant/
+backups/open-webui/
+backups/changedetection/
+backups/supabase/
+backups/*.sql
+backups/*.dump
+shared/*
 
-# Database
-instance/
-*.db
-*.sqlite3
-*.sqlite
-
-# Screenshots and data files
-data/
-screenshots/
-
-# AI and browser agent related
-browser_agent/
-.roo/
-.roomodes
-.windsurfrules
-.taskmasterconfig
-memory-bank/
-tasks/
-mcp_server/
-
-# Docker related
+# Docker-related files
 .docker/
 docker-compose.override.yml
-.dockerignore
-docker-volumes/
 
-# Temporary files
-*.pyc
-*.pyo
-*.pyd
-*.so
-*.dll
-*.egg
-*.egg-info/
-__pycache__/
-*.py[cod]
-*$py.class
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-.nox/
-.hypothesis/
-.coverage.*
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+*.txt
 
-# Distribution / packaging
+# IDE and editor folders
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build and compiled output
 dist/
 build/
-*.egg-info/ 
+out/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Cache
+.cache/
+.npm
+.eslintcache
+
+# Local development files
+*.local
+config.local.js
+*.dev.js
+
+# Local certificates
+*.pem
+*.key
+*.crt
+
+# Generated files
+.vercel
+.netlify
+coverage/
+
+# Ollama model files
+models/
+
+# Large data files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.pdf
+*.docx
+*.xlsx
+*.pptx
+*.mp4
+*.avi
+*.mov
