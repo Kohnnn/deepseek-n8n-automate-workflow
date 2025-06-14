@@ -1,0 +1,91 @@
+# Logs and error files
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev-debug.log
+backend_error.log
+flask_app.log
+
+# Dependency directories
+node_modules/
+__pycache__/
+venv/
+.venv/
+**/venv/
+**/env/
+ms-playwright/
+
+# Environment variables
+.env
+.env.*
+.flaskenv
+
+# Editor directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.cursor/
+.history/
+
+# OS specific
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Database
+instance/
+*.db
+*.sqlite3
+*.sqlite
+
+# Screenshots and data files
+data/
+screenshots/
+
+# AI and browser agent related
+browser_agent/
+.roo/
+.roomodes
+.windsurfrules
+.taskmasterconfig
+memory-bank/
+tasks/
+mcp_server/
+
+# Docker related
+.docker/
+docker-compose.override.yml
+.dockerignore
+docker-volumes/
+
+# Temporary files
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.dll
+*.egg
+*.egg-info/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+.coverage.*
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/ 
